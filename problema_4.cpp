@@ -3,90 +3,82 @@
 //2. Silva Reyes, Santiago Miguel
 //3. Meneses Roncal, Matias Alonso
 
-#include <vector>
 #include <iostream>
+#include <vector>
 using namespace std;
 
-struct Elemento {
-    int val;
-    int fila;
-    int columna;
+#define ALPHABET_SIZE 26
+
+// Nodo del Trie
+struct TrieNode {
+    TrieNode* children[ALPHABET_SIZE];
+    bool isEndOfWord;
+
+    TrieNode() {
+        isEndOfWord = false;
+        // Inicializar todos los hijos con nullptr
+        for (int i = 0; i < ALPHABET_SIZE; i++) {
+            children[i] = nullptr;
+        }
+    }
 };
 
-class Heap {
-    vector<Elemento> heap;
-    void heapify_down(int i) {
-        int smallest = i;
-        int left = 2 * i + 1;
-        int right = 2 * i + 2;
-        if (left < heap.size() && heap[left].val < heap[smallest].val) {
-            smallest = left;
-        }
-        if (right < heap.size() && heap[right].val < heap[smallest].val) {
-            smallest = right;
-        }
-        if (smallest != i) {
-            swap(heap[i], heap[smallest]);
-            heapify_down(smallest);
-        }
-    }
+class Trie {
+private:
+    TrieNode* root;
 
-    void heapify_up(int i) {
-        int parent = (i - 1) / 2;
-        if (i && heap[i].val < heap[parent].val) {
-            swap(heap[i], heap[parent]);
-            heapify_up(parent);
-        }
-    }
-
+    
 public:
-    void insert(Elemento node) {
-        heap.push_back(node);
-        heapify_up(heap.size() - 1);
+    Trie() {
+        root = new TrieNode();
     }
 
-    Elemento top() {
-        if (heap.size() == 0) {
-//            cout << "Heap vacio" << endl;
+    // Insertar una palabra en el Trie
+    void insert(const string& word) {
+        TrieNode* node = root;
+        for (char ch : word) {
+            int index = ch - 'a';  // Convertir el carácter a índice (0-25)
+            if (node->children[index] == nullptr) {
+                node->children[index] = new TrieNode();
+            }
+            node = node->children[index];
         }
-        Elemento raiz = heap[0];
-        heap[0] = heap.back();
-        heap.pop_back();
-        heapify_down(0);
-
-        return raiz;
+        node->isEndOfWord = true;  // Marcar el fin de la palabra
     }
 
-    bool empty() const {
-        return heap.size() == 0;
+    // Buscar una palabra exacta en el Trie
+    bool search(const string& word) {
+        TrieNode* node = root;
+        for (char ch : word) {
+            int index = ch - 'a';
+            if (node->children[index] == nullptr) {
+                return false;  // La palabra no existe
+            }
+            node = node->children[index];
+        }
+        return node->isEndOfWord;  // Verificar si es el fin de la palabra
     }
+
+    // Buscar si un prefijo existe en el Trie
+    bool startsWith(const string& prefix) {
+        TrieNode* node = root;
+        for (char ch : prefix) {
+            int index = ch - 'a';
+            if (node->children[index] == nullptr) {
+                return false;  // El prefijo no existe
+            }
+            node = node->children[index];
+        }
+        return true;  // El prefijo existe
+    }
+
 };
 
 class Solution {
 public:
-    int kthSmallest(vector<vector<int>>& matrix, int k) {
-        Heap heap;
-        for (int i = 0; i < matrix.size(); i++) {
-            Elemento el;
-            el.val = matrix[i][0];
-            el.fila = i;
-            el.columna = 0;
-            heap.insert(el);
-        }
+    vector<string> topKFrequent(vector<string>& words, int k) {
+        vector<string> resultado;
 
-        Elemento element;
-        for (int i = 0; i < k; i++) {
-            element = heap.top();
-            if (element.columna + 1 < matrix.size()) {
-                Elemento nuevoElemento;
-                nuevoElemento.val = matrix[element.fila][element.columna + 1];
-                nuevoElemento.fila = element.fila;
-                nuevoElemento.columna = element.columna + 1;
-                heap.insert(nuevoElemento);
-            }
-        }
-
-        return element.val;
+        return resultado;
     }
 };
-
