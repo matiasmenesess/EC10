@@ -106,6 +106,29 @@ public:
             trie.insert(word);
         }
 
+        vector<pair<string, int>> TodasPalabras = trie.TodasPalabras();
+        vector<pair<string, int>> PalabrasOrdenadas;
+
+
+        for (auto palabra : TodasPalabras) {
+            bool insertado = false;
+            for (auto it = PalabrasOrdenadas.begin(); it != PalabrasOrdenadas.end(); ++it) {
+                if (palabra.second > it->second ||
+                    (palabra.second == it->second && palabra.first < it->first)) {
+                    PalabrasOrdenadas.insert(it, palabra);
+                    insertado = true;
+                    break;
+                }
+            }
+            if (!insertado) {
+                PalabrasOrdenadas.push_back(palabra);
+            }
+        }
+
+        for (int i = 0; i < k && i < PalabrasOrdenadas.size(); ++i) {
+            resultado.push_back(PalabrasOrdenadas[i].first);
+        }
+
         return resultado;
     }
 };
