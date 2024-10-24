@@ -78,6 +78,10 @@ class Solution {
 public:
     vector<string> topKFrequent(vector<string>& words, int k) {
         vector<string> resultado;
+        Trie trie;
+        for (auto word : words) {
+            trie.insert(word);  
+        }
 
         return resultado;
     }
