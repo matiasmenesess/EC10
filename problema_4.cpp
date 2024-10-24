@@ -13,9 +13,11 @@ using namespace std;
 struct TrieNode {
     TrieNode* children[ALPHABET_SIZE];
     bool isEndOfWord;
+    int frecuencia;
 
     TrieNode() {
         isEndOfWord = false;
+        frecuencia =0;
         // Inicializar todos los hijos con nullptr
         for (int i = 0; i < ALPHABET_SIZE; i++) {
             children[i] = nullptr;
@@ -27,7 +29,7 @@ class Trie {
 private:
     TrieNode* root;
 
-    
+
 public:
     Trie() {
         root = new TrieNode();
@@ -44,6 +46,27 @@ public:
             node = node->children[index];
         }
         node->isEndOfWord = true;  // Marcar el fin de la palabra
+        node->frecuencia++;
+    }
+
+    void palabras(TrieNode* node, string palabra, vector<pair<string, int>>& result, int npalabras) {
+        if (result.size() >= npalabras) return;
+        if (node->isEndOfWord) {
+            result.push_back({palabra, node->frecuencia});  // Guardar palabra y su frecuencia
+        }
+
+        for (int i = 0; i < ALPHABET_SIZE; i++) {
+            if (node->children[i] != nullptr) {
+                char nextChar = 'a' + i;
+                palabras(node->children[i], palabra + nextChar, result, npalabras);
+            }
+        }
+    }
+
+    vector<pair<string, int>> TodasPalabras() {
+        vector<pair<string, int>> words;
+        palabras(root, "", words, INT_MAX);  // Llamar a 'palabras' sin límite
+        return words;
     }
 
     // Buscar una palabra exacta en el Trie
@@ -80,7 +103,7 @@ public:
         vector<string> resultado;
         Trie trie;
         for (auto word : words) {
-            trie.insert(word);  
+            trie.insert(word);
         }
 
         return resultado;
